@@ -1,0 +1,284 @@
+/**
+ * @file trie.h
+ * @author Madison Solarana
+ * @brief The Trie data structure.
+ * @details This class is the definition of a Trie used by the spell checker to hold the dictionary.
+ * @date Sat Feb 9, 2013
+ * @version 1.0
+ * @copyright Academic Free License ("AFL") v. 3.0
+ */
+#ifndef TRIE_H
+#define TRIE_H
+#include <algorithm>
+#include <set>
+#include <cctype>
+#include "node.h"
+
+extern const unsigned short ALPHABET; ///Constant for the number of alphabetic characters defined in node.h
+
+class Trie
+{
+  public:
+    /**
+     * Constructor that initializes the root of the Trie and sets the initial node count
+     */
+    Trie()
+    {
+      root = new Node();
+      nodeCount = 0;
+    }
+  
+    /**
+     * Move Constructor that defines move semantics (rvalue reference) so that we can detect rvalue arguments via function overloading
+     * @param t - a rvalue reference to a Trie
+     */
+    Trie(Trie&& t) : Trie()
+    {
+      std::swap(*this, t);
+    }
+  
+    //Copy Constructor
+    Trie(const Trie& t)
+    {
+      this->nodeCount = t.nodeCount;
+      *this->root = *t.root;
+    }
+  
+  /**
+   * Assignment Operator Overload that defines how we set a Trie equal to another Trie using the Copy-and-Swap Idiom
+   * @param t - the Trie that we are setting the other Trie equal to
+   * @return returns a pointer to the instance of the Trie calling the assignment operator
+   */
+    Trie& operator=(const Trie& t)
+    {
+      if(this != &t) //verify that this and t are not the same object
+      {
+        Trie temp(t);
+        std::swap(*this, temp);
+      }
+      return *this;
+    }
+  
+    /**
+     * Destructor that deletes the dynamic memory contained in the Trie
+     */
+    ~Trie()
+    {
+      delete root;
+    }
+  
+    /**
+     * Function that returns the number of nodes currently in the Trie
+     * @return returns an unsigned integer that contains the number of nodes in the Trie
+     */
+    unsigned int getNodeCount()
+    {
+      return nodeCount;
+    }
+  
+    /**
+     * Function that adds a word to the Trie. Duplicate insertion is allowed, but no new nodes are created
+     * @param word - the word to be added into the tree
+     */
+    void addWord(const std::string& word)
+    {
+      Node *currentNode = root;
+      for(const char& c : word)
+      {
+        if(!isalpha(c))
+        {
+          continue; //Ignore non-alphabetic characters
+        }
+        if(currentNode->getChild(c) == nullptr)
+        {
+          currentNode->getChild(c) = new Node();
+          ++nodeCount;
+        }
+        currentNode = currentNode->getChild(c);
+      }
+      currentNode->word = word;
+      currentNode->isEndpoint = true;
+    }
+  
+    /**
+     * Function that searches the Trie for a specific word
+     * @param word - the word that we are searching for
+     * @return returns true or false if the word is in the Trie
+     */
+    bool search(const std::string& word) const
+    {
+      Node *currentNode = root;
+      for(const char& c : word)
+      {
+        if(!isalpha(c))
+        {
+          continue;
+        }
+        if(currentNode->getChild(c) == nullptr)
+        {
+          return false;
+        }
+        currentNode = currentNode->getChild(c);
+      }
+      return currentNode->isEndpoint;
+    }
+  
+    /**
+     * Function that returns the possible corrections for a word. If there are no corrections, the empty set is returned
+     * @param word - the word that needs to be corrected
+     * @return returns a set of strings that are possible corrections for the word. Returns the empty set if no corrections are found
+     */
+    std::set<std::string> getCorrections(const std::string& word)
+    {
+      std::set<std::string> results;
+      determineCorrections(word, results);
+      return results;
+    }
+  
+  private:
+    /**
+     * Function that removes duplicate letters from a string
+     * @param word - the word that we will remove duplicates from
+     * @return returns the string with all duplicate characters removed
+     */
+    std::string removeDuplicates(std::string word)
+    {
+      unsigned long stringSize = word.size();
+      if(stringSize < 2)
+      {
+        return word;
+      }
+      else
+      {
+        std::string temp = "";
+        char previousLetter = word[0];
+        char currentLetter;
+        temp += previousLetter;
+        for(unsigned long i = 1; i < stringSize; ++i)
+        {
+          currentLetter = word[i];
+          if(currentLetter != previousLetter)
+          {
+            temp += currentLetter;
+            previousLetter = currentLetter;
+          }
+        }
+        return temp;
+      }
+    }
+  
+    /**
+     * Function that replaces the vowels in a string with a specified vowel
+     * @param word - the word that we will replace the vowels in
+     * @param v - the specificed replacement vowel
+     * @return returns the string with its vowels replaced
+     */
+    std::string replaceVowels(std::string word, const char& v)
+    {
+      unsigned long stringSize = word.size();
+      if(stringSize < 2)
+      {
+        return word;
+      }
+      else
+      {
+        std::string temp = "";
+        for(const char& c : word)
+        {
+          if((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u'))
+          {
+            temp += v;
+          }
+          else
+          {
+            temp += c;
+          }
+        }
+        return temp;
+      }
+    }
+  
+    /**
+     * Function that determines possible corrections for a word based off of edit distance
+     * @param word - the word that we are determining corrections for
+     * @param distance - the specified edit distance used for calculations
+     * @param currentNode - a pointer to the node we are currently at in the Trie
+     * @param results - the set of results that we store corrections in
+     */
+    void recursiveSearch(std::string word, unsigned int distance, Node *currentNode, std::set<std::string>& results)
+    {
+      unsigned long stringSize = word.size();
+      if(stringSize == 0)
+      {
+        if(currentNode->isEndpoint == true)
+          results.insert(currentNode->word);
+        return;
+      }
+      
+      char c = word[0];
+      if(currentNode->getChild(c) != nullptr)
+      {
+        recursiveSearch(word.substr(1), distance, currentNode->getChild(c), results); //recursively continue searching
+      }
+        
+      if(distance < 1)
+      {
+        return;
+      }
+      
+      for(unsigned short i = 0; i < ALPHABET; ++i)
+        if(currentNode->children[i] != nullptr)
+        {
+          recursiveSearch(word, (distance - 1), currentNode->children[i], results); //check the word for a missing character
+          recursiveSearch(word.substr(1), (distance - 1), currentNode->children[i], results); //check the word for an incorrect character
+        }
+      
+      if(stringSize < 2)
+      {
+        return;
+      }
+      
+      c = word[1];
+      if(currentNode->getChild(c) != nullptr)
+      {
+        recursiveSearch(word.substr(2), (distance - 1), currentNode->getChild(c), results); //check to see if the word contains an extra character
+      }
+      
+      std::swap(word[0],word[1]); 
+      recursiveSearch(word, (distance - 1), currentNode, results); //check to see if the word contains swapped characters
+    }
+  
+    /**
+     * Function that determines the possible corrections for a word
+     * @param word - the word that we are finding corrections of
+     * @param results - the set of possible corrections
+     */
+    void determineCorrections(const std::string& word, std::set<std::string>& results)
+    {
+      std::string temp = word;
+      std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+      if(search(temp) == true)
+      {
+        results.insert(temp);
+        return;
+      }
+      temp = removeDuplicates(temp);
+      recursiveSearch(temp, 4, root, results);
+      temp = replaceVowels(temp, 'a');
+      recursiveSearch(temp, 3, root, results);
+      temp = replaceVowels(temp, 'e');
+      recursiveSearch(temp, 3, root, results);
+      temp = replaceVowels(temp, 'i');
+      recursiveSearch(temp, 3, root, results);
+      temp = replaceVowels(temp, 'o');
+      recursiveSearch(temp, 3, root, results);
+      temp = replaceVowels(temp, 'u');
+      recursiveSearch(temp, 3, root, results);
+      return;
+    }
+  
+    Node *root; ///Top Node of the Trie
+    unsigned int nodeCount; ///Number of nodes (not counting the root as it has no data)
+};
+
+#endif
