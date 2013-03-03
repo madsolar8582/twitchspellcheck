@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The spell checker program.
  * @details This program checks the spelling of user input strings using the default unix dictionary.
- * @date Sat Feb 9, 2013
- * @version 1.0
+ * @date Sun Mar 3, 2013
+ * @version 1.1
  * @copyright Academic Free License ("AFL") v. 3.0
  * Problem Description: http://www.twitch.tv/problems/spellcheck
  */
@@ -56,6 +56,7 @@ int main()
   while(!fileIn.eof())
   {
     fileIn >> reader;
+    std::transform(reader.begin(), reader.end(), reader.begin(), ::tolower); //Some words begin with uppercase letters, but we need to be case-insensitive
     dictionary.addWord(reader);
     ++numWords;
   }

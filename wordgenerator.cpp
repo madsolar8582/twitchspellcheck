@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The random misspelling generator program.
  * @details This program generates random misspellings of words using the default unix dictionary.
- * @date Sat Feb 9, 2013
- * @version 1.0
+ * @date Sun Mar 3, 2013
+ * @version 1.1
  * @copyright Academic Free License ("AFL") v. 3.0
  */
 #include <iostream>
@@ -21,7 +21,7 @@ int main()
   srand(time(NULL)); //Just need a simple random number generator, the generators in <random> do more than I require
   ifstream fileIn; //Input file stream interface
   ofstream fileOut; //Output file stream interface
-  string reader = ""; //String that 
+  string reader = ""; //String that reads in the contents of the dictionary
   vector<string> dictionary; //Vector of strings that holds the contents of the dictionary
   
   fileIn.open("/usr/share/dict/words");
@@ -53,32 +53,25 @@ int main()
     for(const char& c : startingWord)
     {
       int randomValue = rand() % 10; //Returns an integer in the range [0,9]
-      if((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u'))
+      if((randomValue < 3) && ((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u'))) //20% chance to change vowel
       {
-        if(randomValue < 3) //20% chance to change vowel
+        switch(rand() % 5) //Returns an integer in the range [0,4]
         {
-          switch(rand() % 5)
-          {
-            case 0:
-              misspelledWord += 'u';
-              break;
-            case 1:
-              misspelledWord += 'o';
-              break;
-            case 2:
-              misspelledWord += 'i';
-              break;
-            case 3:
-              misspelledWord += 'e';
-              break;
-            case 4:
-              misspelledWord += 'a';
-              break;
-          }
-        }
-        else
-        {
-          misspelledWord += c;
+          case 0:
+            misspelledWord += 'u';
+            break;
+          case 1:
+            misspelledWord += 'o';
+            break;
+          case 2:
+            misspelledWord += 'i';
+            break;
+          case 3:
+            misspelledWord += 'e';
+            break;
+          case 4:
+            misspelledWord += 'a';
+            break;
         }
       }
       else if((randomValue > 3) && (randomValue < 6)) //20% chance to double a letter
@@ -96,7 +89,7 @@ int main()
       }
     }
     cout << misspelledWord << endl;
-    fileOut << misspelledWord << endl;
+    fileOut << misspelledWord << " -> " << startingWord << endl;
   }
   fileOut.close();
   cout << "-1" << endl; //Send termination character to the receiving spell checking program
