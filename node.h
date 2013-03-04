@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The Node data structure.
  * @details This class is the definition of a Node used by the Trie data structure to hold words.
- * @date Sat Feb 9, 2013
- * @version 1.0
+ * @date Sun Mar 3, 2013
+ * @version 1.1
  * @copyright Academic Free License ("AFL") v. 3.0
  */
 #ifndef NODE_H
@@ -73,7 +73,7 @@ struct Node
    */
   Node& operator=(const Node& n)
   {
-    if(this != &n) //verify that this and n are not the same object
+    if(this != &n) //Verify that this and n are not the same object
     {
       Node temp(n);
       std::swap(*this, temp);
@@ -102,7 +102,7 @@ struct Node
    */
   Node*& getChild(const char& c)
   {
-    return children[tolower(c) - 'a']; //converts character to lowercase and then we use its alphabetical value to access the corresponding child Node
+    return children[tolower(c) - 'a']; //Converts character to lowercase and then we use its alphabetical value to access the corresponding child Node
   }
   
   std::string word; ///Data contained in the node

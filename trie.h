@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The Trie data structure.
  * @details This class is the definition of a Trie used by the spell checker to hold the dictionary.
- * @date Sat Feb 9, 2013
- * @version 1.0
+ * @date Sun Mar 3, 2013
+ * @version 1.1
  * @copyright Academic Free License ("AFL") v. 3.0
  */
 #ifndef TRIE_H
@@ -51,7 +51,7 @@ class Trie
    */
     Trie& operator=(const Trie& t)
     {
-      if(this != &t) //verify that this and t are not the same object
+      if(this != &t) //Verify that this and t are not the same object
       {
         Trie temp(t);
         std::swap(*this, temp);
@@ -112,7 +112,7 @@ class Trie
       {
         if(!isalpha(c))
         {
-          continue;
+          continue; //Ignore non-alphabetic characters
         }
         if(currentNode->getChild(c) == nullptr)
         {
@@ -168,6 +168,16 @@ class Trie
     }
   
     /**
+     * Function that determines if a character is a vowel
+     * @param c - the character that we are examining
+     * @return returns a boolean flag that represents whether or not the character is a vowel
+     */
+    bool isVowel(const char& c)
+    {
+      return ((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u'));
+    }
+  
+    /**
      * Function that replaces the vowels in a string with a specified vowel
      * @param word - the word that we will replace the vowels in
      * @param v - the specificed replacement vowel
@@ -185,7 +195,7 @@ class Trie
         std::string temp = "";
         for(const char& c : word)
         {
-          if((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u'))
+          if(isVowel(c) == true)
           {
             temp += v;
           }
@@ -199,13 +209,13 @@ class Trie
     }
   
     /**
-     * Function that determines possible corrections for a word based off of edit distance
+     * Function that determines possible corrections for a word based off of Damerau-Levenshtein distance
      * @param word - the word that we are determining corrections for
-     * @param distance - the specified edit distance used for calculations
+     * @param distance - the specified distance used for calculations
      * @param currentNode - a pointer to the node we are currently at in the Trie
      * @param results - the set of results that we store corrections in
      */
-    void recursiveSearch(std::string word, unsigned int distance, Node *currentNode, std::set<std::string>& results)
+    void fuzzySearch(std::string word, unsigned int distance, Node *currentNode, std::set<std::string>& results)
     {
       unsigned long stringSize = word.size();
       if(stringSize == 0)
@@ -218,7 +228,7 @@ class Trie
       char c = word[0];
       if(currentNode->getChild(c) != nullptr)
       {
-        recursiveSearch(word.substr(1), distance, currentNode->getChild(c), results); //recursively continue searching
+        fuzzySearch(word.substr(1), distance, currentNode->getChild(c), results); //Recursively continue searching
       }
         
       if(distance < 1)
@@ -229,8 +239,8 @@ class Trie
       for(unsigned short i = 0; i < ALPHABET; ++i)
         if(currentNode->children[i] != nullptr)
         {
-          recursiveSearch(word, (distance - 1), currentNode->children[i], results); //check the word for a missing character
-          recursiveSearch(word.substr(1), (distance - 1), currentNode->children[i], results); //check the word for an incorrect character
+          fuzzySearch(word, (distance - 1), currentNode->children[i], results); //Check for a deletion
+          fuzzySearch(word.substr(1), (distance - 1), currentNode->children[i], results); //Check for a substitution
         }
       
       if(stringSize < 2)
@@ -241,11 +251,11 @@ class Trie
       c = word[1];
       if(currentNode->getChild(c) != nullptr)
       {
-        recursiveSearch(word.substr(2), (distance - 1), currentNode->getChild(c), results); //check to see if the word contains an extra character
+        fuzzySearch(word.substr(2), (distance - 1), currentNode->getChild(c), results); //Check for an insertion
       }
       
       std::swap(word[0],word[1]); 
-      recursiveSearch(word, (distance - 1), currentNode, results); //check to see if the word contains swapped characters
+      fuzzySearch(word, (distance - 1), currentNode, results); //Check for a transposition
     }
   
     /**
@@ -263,17 +273,17 @@ class Trie
         return;
       }
       temp = removeDuplicates(temp);
-      recursiveSearch(temp, 4, root, results);
+      fuzzySearch(temp, 4, root, results);
       temp = replaceVowels(temp, 'a');
-      recursiveSearch(temp, 3, root, results);
+      fuzzySearch(temp, 3, root, results);
       temp = replaceVowels(temp, 'e');
-      recursiveSearch(temp, 3, root, results);
+      fuzzySearch(temp, 3, root, results);
       temp = replaceVowels(temp, 'i');
-      recursiveSearch(temp, 3, root, results);
+      fuzzySearch(temp, 3, root, results);
       temp = replaceVowels(temp, 'o');
-      recursiveSearch(temp, 3, root, results);
+      fuzzySearch(temp, 3, root, results);
       temp = replaceVowels(temp, 'u');
-      recursiveSearch(temp, 3, root, results);
+      fuzzySearch(temp, 3, root, results);
       return;
     }
   
