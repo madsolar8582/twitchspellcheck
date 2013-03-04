@@ -71,7 +71,7 @@ class Trie
      * Function that returns the number of nodes currently in the Trie
      * @return returns an unsigned integer that contains the number of nodes in the Trie
      */
-    unsigned int getNodeCount()
+    unsigned int getNodeCount() const
     {
       return nodeCount;
     }
@@ -128,7 +128,7 @@ class Trie
      * @param word - the word that needs to be corrected
      * @return returns a set of strings that are possible corrections for the word. Returns the empty set if no corrections are found
      */
-    std::set<std::string> getCorrections(const std::string& word)
+    std::set<std::string> getCorrections(const std::string& word) const
     {
       std::set<std::string> results;
       determineCorrections(word, results);
@@ -141,7 +141,7 @@ class Trie
      * @param word - the word that we will remove duplicates from
      * @return returns the string with all duplicate characters removed
      */
-    std::string removeDuplicates(std::string word)
+    std::string removeDuplicates(std::string word) const
     {
       unsigned long stringSize = word.size();
       if(stringSize < 2)
@@ -172,7 +172,7 @@ class Trie
      * @param c - the character that we are examining
      * @return returns a boolean flag that represents whether or not the character is a vowel
      */
-    bool isVowel(const char& c)
+    bool isVowel(const char& c) const
     {
       return ((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u'));
     }
@@ -183,7 +183,7 @@ class Trie
      * @param v - the specificed replacement vowel
      * @return returns the string with its vowels replaced
      */
-    std::string replaceVowels(std::string word, const char& v)
+    std::string replaceVowels(std::string word, const char& v) const
     {
       unsigned long stringSize = word.size();
       if(stringSize < 2)
@@ -215,7 +215,7 @@ class Trie
      * @param currentNode - a pointer to the node we are currently at in the Trie
      * @param results - the set of results that we store corrections in
      */
-    void fuzzySearch(std::string word, unsigned int distance, Node *currentNode, std::set<std::string>& results)
+    void fuzzySearch(std::string word, unsigned int distance, Node *currentNode, std::set<std::string>& results) const
     {
       unsigned long stringSize = word.size();
       if(stringSize == 0)
@@ -263,7 +263,7 @@ class Trie
      * @param word - the word that we are finding corrections of
      * @param results - the set of possible corrections
      */
-    void determineCorrections(const std::string& word, std::set<std::string>& results)
+    void determineCorrections(const std::string& word, std::set<std::string>& results) const
     {
       std::string temp = word;
       std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);

@@ -16,6 +16,13 @@
 
 using namespace std;
 
+/**
+ * Function that determines if a character is a vowel
+ * @param c - the character that we are examining
+ * @return returns a boolean flag that represents whether or not the character is a vowel
+ */
+bool isVowel(const char& c);
+
 int main()
 {
   srand(time(NULL)); //Just need a simple random number generator, the generators in <random> do more than I require
@@ -53,7 +60,7 @@ int main()
     for(const char& c : startingWord)
     {
       int randomValue = rand() % 10; //Returns an integer in the range [0,9]
-      if((randomValue < 3) && ((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u'))) //20% chance to change vowel
+      if((randomValue < 3) && (isVowel(c) == true)) //20% chance to change vowel
       {
         switch(rand() % 5) //Returns an integer in the range [0,4]
         {
@@ -94,4 +101,9 @@ int main()
   fileOut.close();
   cout << "-1" << endl; //Send termination character to the receiving spell checking program
   return 0;
+}
+
+bool isVowel(const char& c)
+{
+  return ((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u'));
 }
