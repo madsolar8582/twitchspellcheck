@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The Trie data structure.
  * @details This class is the definition of a Trie used by the spell checker to hold the dictionary.
- * @date Sun Mar 3, 2013
- * @version 1.1
+ * @date Mon Mar 4, 2013
+ * @version 1.2
  * @copyright Academic Free License ("AFL") v. 3.0
  */
 #ifndef TRIE_H
@@ -215,13 +215,15 @@ class Trie
      * @param currentNode - a pointer to the node we are currently at in the Trie
      * @param results - the set of results that we store corrections in
      */
-    void fuzzySearch(std::string word, unsigned int distance, Node *currentNode, std::set<std::string>& results) const
+    void fuzzySearch(std::string word, unsigned short distance, Node *currentNode, std::set<std::string>& results) const
     {
       unsigned long stringSize = word.size();
       if(stringSize == 0)
       {
         if(currentNode->isEndpoint == true)
+        {
           results.insert(currentNode->word);
+        }
         return;
       }
       
@@ -259,6 +261,79 @@ class Trie
     }
   
     /**
+     * Function that determines whether or not a word contains a specified letter
+     * @param word - the word being searched
+     * @param letter - the letter being searched for
+     * @return returns a boolean flag that represents whether or not the specified letter was found
+     */
+    bool containsLetter(const std::string word, const char& letter) const
+    {
+      for(const char& c : word)
+      {
+        if(c == letter)
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+  
+    /**
+     * Function that removes undesired search results from the result set
+     * @param word - the word input by the user with its duplicate letters removed
+     * @param results - the set of possible matches
+     * @return returns a set with either the same number or fewer elements of the search results with undesirable words removed
+     */
+    std::set<std::string> pruneCorrections(const std::string& word, const std::set<std::string>& results) const
+    {
+      std::set<std::string> temp = results;
+      const char firstLetter = word[0];
+      if(!isVowel(firstLetter))
+      {
+        for(const std::string& s : results)
+        {
+          char c = s[0];
+          if(c != firstLetter)
+          {
+            temp.erase(s); //Remove words that start with a different consonant
+          }
+        }
+      }
+      else if(isVowel(firstLetter) == true)
+      {
+        for(const std::string& s : results)
+        {
+          char c = s[0];
+          if(!isVowel(c))
+          {
+            temp.erase(s); //Remove words that start with a consonant since the input word begins with a vowel
+          }
+        }
+      }
+      
+      for(const std::string& s : results)
+      {
+        if(s.size() < word.size())
+        {
+          temp.erase(s); //Remove words with less letters than the input word
+        }
+      }
+        
+      for(const std::string& s : results)
+      {
+        for(const char& c : s)
+        {
+          if(!containsLetter(word, c))
+          {
+            temp.erase(s); //Remove words with consonants not in the input word
+            break;
+          }
+        }
+      }
+      return temp;
+    }
+  
+    /**
      * Function that determines the possible corrections for a word
      * @param word - the word that we are finding corrections of
      * @param results - the set of possible corrections
@@ -266,6 +341,7 @@ class Trie
     void determineCorrections(const std::string& word, std::set<std::string>& results) const
     {
       std::string temp = word;
+      std::string temp2;
       std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
       if(search(temp) == true)
       {
@@ -273,6 +349,8 @@ class Trie
         return;
       }
       temp = removeDuplicates(temp);
+      temp2 = temp;
+      
       fuzzySearch(temp, 4, root, results);
       temp = replaceVowels(temp, 'a');
       fuzzySearch(temp, 3, root, results);
@@ -284,6 +362,8 @@ class Trie
       fuzzySearch(temp, 3, root, results);
       temp = replaceVowels(temp, 'u');
       fuzzySearch(temp, 3, root, results);
+      
+      results = pruneCorrections(temp2, results);
       return;
     }
   

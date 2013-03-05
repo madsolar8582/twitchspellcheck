@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The spell checker program.
  * @details This program checks the spelling of user input strings using the default unix dictionary.
- * @date Sun Mar 3, 2013
- * @version 1.1
+ * @date Tue Mar 5, 2013
+ * @version 1.2
  * @copyright Academic Free License ("AFL") v. 3.0
  * Problem Description: http://www.twitch.tv/problems/spellcheck
  */
@@ -41,7 +41,7 @@ int main()
   typedef std::chrono::milliseconds milliseconds; // typedef for convenience in writing certain expressions
   time dictionaryStartTime, dictionaryEndTime; //Time variables that will hold the starting and stopping time of the dictionary loading operation
   
-  cout << "Welcome to the spellchecker." << endl;
+  cout << "Welcome to the spell checker." << endl;
   
   fileIn.open("/usr/share/dict/words");
   if(fileIn.fail())
@@ -64,7 +64,7 @@ int main()
   fileIn.close();
     
   auto elapsedDictionaryTime = std::chrono::duration_cast<milliseconds>(dictionaryEndTime - dictionaryStartTime).count(); //store the elapsed time of the dictionary loading operation
-  cout << numWords << " words loaded into " << dictionary.getNodeCount() << " nodes in " << elapsedDictionaryTime << " milliseconds." << endl;
+  cout << numWords << " words loaded into " << dictionary.getNodeCount() << " nodes in " << elapsedDictionaryTime << " milliseconds." << endl << endl;
     
   do
   {
@@ -87,7 +87,7 @@ int main()
       if(corrections.empty() != true)
       {
         cout << corrections.size() << " possible correction(s) found in " << elapsedCorrectionTime << " milliseconds." << endl;
-        cout << "Suggestions: ";
+        cout << "Suggestion(s): ";
         unsigned short numberOfCorrections = 0;
         for(const string& s : corrections)
         {
@@ -105,7 +105,8 @@ int main()
       }
     }
   }while(!exitChoice);
-  cout << "Exiting program..." << endl;
+  
+  cout << "Terminating program execution..." << endl;
   return 0;
 }
 
