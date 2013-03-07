@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The spell checker program.
  * @details This program checks the spelling of user input strings using the default unix dictionary.
- * @date Tue Mar 5, 2013
- * @version 1.2
+ * @date Wed Mar 6, 2013
+ * @version 1.3
  * @copyright Academic Free License ("AFL") v. 3.0
  * Problem Description: http://www.twitch.tv/problems/spellcheck
  */
@@ -38,10 +38,11 @@ int main()
   ifstream fileIn; //Input file stream interface
   typedef std::chrono::high_resolution_clock highResClock; //typedef for convenience in writing certain expressions
   typedef std::chrono::time_point<highResClock> time; //typedef for convenience in writing certain expressions
-  typedef std::chrono::milliseconds milliseconds; // typedef for convenience in writing certain expressions
+  typedef std::chrono::milliseconds milliseconds; //typedef for convenience in writing certain expressions
+  typedef std::chrono::microseconds microseconds; //typedef for convenience in writing certain expressions
   time dictionaryStartTime, dictionaryEndTime; //Time variables that will hold the starting and stopping time of the dictionary loading operation
   
-  cout << "Welcome to the spell checker." << endl;
+  cout << "Welcome to the Spell Checker." << endl;
   
   fileIn.open("/usr/share/dict/words");
   if(fileIn.fail())
@@ -64,7 +65,7 @@ int main()
   fileIn.close();
     
   auto elapsedDictionaryTime = std::chrono::duration_cast<milliseconds>(dictionaryEndTime - dictionaryStartTime).count(); //store the elapsed time of the dictionary loading operation
-  cout << numWords << " words loaded into " << dictionary.getNodeCount() << " nodes in " << elapsedDictionaryTime << " milliseconds." << endl << endl;
+  cout << numWords << " word(s) loaded into " << dictionary.getNodeCount() << " node(s) in " << elapsedDictionaryTime << " millisecond(s)." << endl << endl;
     
   do
   {
@@ -83,19 +84,14 @@ int main()
       correctionStartTime = highResClock::now();
       corrections = dictionary.getCorrections(userInput);
       correctionEndTime = highResClock::now();
-      auto elapsedCorrectionTime = std::chrono::duration_cast<milliseconds>(correctionEndTime - correctionStartTime).count(); //store the elapsed time of the correction operation
+      auto elapsedCorrectionTime = std::chrono::duration_cast<microseconds>(correctionEndTime - correctionStartTime).count(); //store the elapsed time of the correction operation
       if(corrections.empty() != true)
       {
-        cout << corrections.size() << " possible correction(s) found in " << elapsedCorrectionTime << " milliseconds." << endl;
+        cout << corrections.size() << " possible correction(s) found in " << elapsedCorrectionTime << " microsecond(s)." << endl;
         cout << "Suggestion(s): ";
-        unsigned short numberOfCorrections = 0;
         for(const string& s : corrections)
         {
-          if(numberOfCorrections < 11) //Output the first 10 suggestions, as the problem description was ambiguous. It said "can" output one if more than one match was found not "should".
-          {
-            cout << s << " ";
-            ++numberOfCorrections;
-          }
+          cout << s << " ";
         }
         cout << endl;
       }
@@ -103,6 +99,10 @@ int main()
       {
         cout << "No Suggestions" << endl;
       }
+    }
+    else
+    {
+      cout << "Invalid input! Please try again with a word containing only [a-z]." << endl;
     }
   }while(!exitChoice);
   
