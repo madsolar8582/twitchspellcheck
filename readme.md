@@ -23,11 +23,9 @@
   With these properties, search time is at worst O(m), where m is the length of the key (or in this case, the word being looked for).
 
 ##Runtime Complexity:##
-  To lookup words, I elected to use edit distance as a basis for the search algorithm. First, I change the word into all lowercase, which is O(m). 
+  To lookup words, I first change the word into all lowercase, which is O(m). 
   Then I search the trie for the word without any other changes, which is O(m). 
-  If the word is not found in the trie, I remove the duplicate characters in the word (which is another O(m) operation), then I recursively search the trie again with the cost of O(m) for each substring. 
-  Finally, I replace the vowels in the word (O(m) cost) and recursively search (O(m) cost per substring) 5 separate times, each time being with a different vowel. 
-  However, each recursive search is limited by a distance parameter passed into the function to limit how far away from the word the algorithm searches. 
+  If the word is not found in the trie, I recursively search the trie again with the cost of O(m) for each substring (branching at duplicates and vowels). 
   Since all of the operations are O(m), the runtime complexity looks like it is O(km), where k is a nonzero constant and, in this case, k is the number of searches plus the cost of manipulating characters in the string. 
   However, because O(km) = O(m) if k is nonzero, the runtime of the program is O(m). 
 
@@ -36,14 +34,4 @@
   A directed acyclic word graph (DAWG) compresses identical branches of a trie which lead to the same suffixes. 
   Another option is to convert the trie into a bitwise trie and do all operations using bits. 
   This would allow for parallelized searching and can be executed quickly on out-of-order CPUs using special instructions in some of the recent instruction sets. 
-  It is also possible to change the implementation to solely rely on Levenshtein Distance, but the runtime may get slower as you have to iterate through the dictionary calculating distances and then check whether or not it is below the maximum threshold.
-
-  Another thing is that as is, my spelling corrector is dumb as it solely relies on distance and has no context to find results. 
-  This leads to a large number of possible corrections which are equally valid replacements based on the 3 rules of the problem. 
-  To fix this, it would be interesting to "train" the corrector by feeding it large amounts of text to learn about the words it has in its dictionary, then search using Bayes' Theorem. 
-  Granted, this would increase the pre-processing time and the memory used, but it would produce more accurate results. 
-  Currently, I output at most 10 suggestions returned from the search function as the problem states that there doesn't have to be only one output (it says can). 
-  Since the search function can return a lot of results, sometimes the most likely word isn't output to the user (it is still in the set of results), but it is better than being bombarded by hundreds of possible suggestions. 
-  In interest of full disclosure, it is possible for the generator program to pick a word from the dictionary and mangle it so much, that the distance limit I have set in the search function will not be able to reconstruct the word. 
-  To alleviate this, the limit can be increased, but that will increase the amount of time taken to search for a given word and increase the number of possible corrections returned.
-
+  It is also possible to change the implementation to solely rely on Damerau-Levenshtein Distance, but the runtime may get slower as you have to iterate through the dictionary calculating distances and then check whether or not it is below the maximum threshold.

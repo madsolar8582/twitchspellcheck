@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The random misspelling generator program.
  * @details This program generates random misspellings of words using the default unix dictionary.
- * @date Sun Mar 3, 2013
- * @version 1.1
+ * @date Thu Mar 7, 2013
+ * @version 1.2
  * @copyright Academic Free License ("AFL") v. 3.0
  */
 #include <iostream>
@@ -53,7 +53,7 @@ int main()
     fileIn.close();
     exit(EXIT_FAILURE);
   }
-  for(int i = 0; i < 50; ++i)
+  for(int i = 0; i < 10000; ++i)
   {
     string startingWord = dictionary[rand() % dictionary.size()]; //Pick a random word from the dictionary
     string misspelledWord = ""; //New word that we will create

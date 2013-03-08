@@ -3,8 +3,8 @@
  * @author Madison Solarana
  * @brief The spell checker program.
  * @details This program checks the spelling of user input strings using the default unix dictionary.
- * @date Wed Mar 6, 2013
- * @version 1.3
+ * @date Thu Mar 7, 2013
+ * @version 1.4
  * @copyright Academic Free License ("AFL") v. 3.0
  * Problem Description: http://www.twitch.tv/problems/spellcheck
  */
@@ -64,7 +64,7 @@ int main()
   dictionaryEndTime = highResClock::now();
   fileIn.close();
     
-  auto elapsedDictionaryTime = std::chrono::duration_cast<milliseconds>(dictionaryEndTime - dictionaryStartTime).count(); //store the elapsed time of the dictionary loading operation
+  auto elapsedDictionaryTime = std::chrono::duration_cast<milliseconds>(dictionaryEndTime - dictionaryStartTime).count(); //Store the elapsed time of the dictionary loading operation
   cout << numWords << " word(s) loaded into " << dictionary.getNodeCount() << " node(s) in " << elapsedDictionaryTime << " millisecond(s)." << endl << endl;
     
   do
@@ -84,7 +84,7 @@ int main()
       correctionStartTime = highResClock::now();
       corrections = dictionary.getCorrections(userInput);
       correctionEndTime = highResClock::now();
-      auto elapsedCorrectionTime = std::chrono::duration_cast<microseconds>(correctionEndTime - correctionStartTime).count(); //store the elapsed time of the correction operation
+      auto elapsedCorrectionTime = std::chrono::duration_cast<microseconds>(correctionEndTime - correctionStartTime).count(); //Store the elapsed time of the correction operation
       if(corrections.empty() != true)
       {
         cout << corrections.size() << " possible correction(s) found in " << elapsedCorrectionTime << " microsecond(s)." << endl;
@@ -124,6 +124,10 @@ bool isValidInput(const string& input)
       {
         return false;
       }
+    }
+    if(input.size() > 32767) //Unsigned short max
+    {
+      return false;
     }
   }
   return true;

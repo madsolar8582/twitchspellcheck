@@ -4,12 +4,11 @@
  * @brief The Trie data structure.
  * @details This class is the definition of a Trie used by the spell checker to hold the dictionary.
  * @date Thu Mar 7, 2013
- * @version 1.5
+ * @version 1.6
  * @copyright Academic Free License ("AFL") v. 3.0
  */
 #ifndef TRIE_H
 #define TRIE_H
-#include <iostream>
 #include <set>
 #include <string>
 #include <utility>
@@ -136,7 +135,7 @@ class Trie
     {
       std::set<std::string> results;
       std::string temp = word;
-      std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+      std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower); //Convert to lowercase to eliminate case errors
       if(search(temp) == true)
       {
         results.insert(temp);
@@ -158,31 +157,7 @@ class Trie
     }
   
     /**
-     * Function that counts the number of consecutive occurrences of a letter
-     * @param word - the word that is being searched
-     * @param wordSize - the size of the word being searched
-     * @param letter - the letter being compared to the contents of the word
-     * @return returns the number of duplicate letters that follow the input letter
-     */
-    unsigned short getNumberOfConsecutiveDuplicates(const std::string& word, const unsigned short& wordSize, const char& letter) const
-    {
-      unsigned short numDuplicates = 0;
-      for(unsigned short i = 1; i <= (wordSize - 1); ++i)
-      {
-        if(word[i] == letter)
-        {
-          ++numDuplicates;
-        }
-        else
-        {
-          break;
-        }
-      }
-      return numDuplicates;
-    }
-  
-    /**
-     * Function that determines possible corrections for a word based off of the known error algorithm
+     * Function that determines possible corrections for a word based off of the known error algorithm (duplicate letters, substituted vowels)
      * @param word - the word that we are determining corrections for
      * @param currentNode - a pointer to the node we are currently at in the Trie
      * @param results - the set of results that we store corrections in
@@ -190,15 +165,12 @@ class Trie
     void fuzzySearch(const std::string& word, Node *currentNode, std::set<std::string>& results) const
     {
       unsigned short wordSize = static_cast<unsigned short>(word.size());
-      std::cout << "Entering with word=" << word << " and size=" << wordSize << " and nodeWord=" << currentNode->word << std::endl;
       if(wordSize == 0)
       {
-        if(currentNode->isEndpoint == true)
+        if(currentNode->isEndpoint == true) //Only add a word if it is flagged as a complete word
         {
-          std::cout << "Added " << currentNode->word << " to result set" << std::endl;
           results.insert(currentNode->word);
         }
-        std::cout << "exiting search" << std::endl;
         return;
       }
       
@@ -207,148 +179,83 @@ class Trie
       {
         if(!isVowel(c)) //Don't need branching behavior for consonants
         {
-          if(wordSize > 1)
+          fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
+          if(wordSize < 2)
           {
-            unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-            if(numDuplicates > 0)
-            {
-              for(unsigned short i = 1; i <= numDuplicates; ++i)
-              {
-                fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
-              }
-              fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
-            }
-            else
-            {
-              fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-            }
+            return;
           }
-          else
+          c = word[1];
+          if((c == word[0]) && (currentNode->getChild(c) != nullptr))
           {
-            fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
+            fuzzySearch(word.substr(2), currentNode->getChild(c), results); //Skip a duplicate letter
           }
         }
         else
         {
-          if(currentNode->getChild('a') != nullptr) //Branch for a
+          fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
+          if(currentNode->getChild('a') != nullptr)
           {
-            c = 'a';
-            if(wordSize > 1)
-            {
-              unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              if(numDuplicates > 0)
-              {
-                for(unsigned short i = 1; i <= numDuplicates; ++i)
-                {
-                  fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
-                }
-                fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
-              }
-              else
-              {
-                fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-              }
-            }
-            else
-            {
-              fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-            }
+            fuzzySearch(word.substr(1), currentNode->getChild('a'), results); //Recursively continue searching with a vowel permutation
           }
-          if(currentNode->getChild('e') != nullptr) //Branch for e
+          if(currentNode->getChild('e') != nullptr)
           {
-            c = 'e';
-            if(wordSize > 1)
-            {
-              unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              if(numDuplicates > 0)
-              {
-                for(unsigned short i = 1; i <= numDuplicates; ++i)
-                {
-                  fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
-                }
-                fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
-              }
-              else
-              {
-                fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-              }
-            }
-            else
-            {
-              fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-            }
+            fuzzySearch(word.substr(1), currentNode->getChild('e'), results); //Recursively continue searching with a vowel permutation
           }
-          if(currentNode->getChild('i') != nullptr) //Branch for i
+          if(currentNode->getChild('i') != nullptr)
           {
-            c = 'i';
-            if(wordSize > 1)
-            {
-              unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              if(numDuplicates > 0)
-              {
-                for(unsigned short i = 1; i <= numDuplicates; ++i)
-                {
-                  fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
-                }
-                fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
-              }
-              else
-              {
-                fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-              }
-            }
-            else
-            {
-              fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-            }
+            fuzzySearch(word.substr(1), currentNode->getChild('i'), results); //Recursively continue searching with a vowel permutation
           }
-          if(currentNode->getChild('o') != nullptr) //Branch for o
+          if(currentNode->getChild('o') != nullptr)
           {
-            c = 'o';
-            if(wordSize > 1)
-            {
-              unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              if(numDuplicates > 0)
-              {
-                for(unsigned short i = 1; i <= numDuplicates; ++i)
-                {
-                  fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
-                }
-                fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
-              }
-              else
-              {
-                fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-              }
-            }
-            else
-            {
-              fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-            }
+            fuzzySearch(word.substr(1), currentNode->getChild('o'), results); //Recursively continue searching with a vowel permutation
           }
-          if(currentNode->getChild('u') != nullptr) //Branch for u
+          if(currentNode->getChild('u') != nullptr)
           {
-            c = 'u';
-            if(wordSize > 1)
-            {
-              unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              if(numDuplicates > 0)
-              {
-                for(unsigned short i = 1; i <= numDuplicates; ++i)
-                {
-                  fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
-                }
-                fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
-              }
-              else
-              {
-                fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-              }
-            }
-            else
-            {
-              fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
-            }
+            fuzzySearch(word.substr(1), currentNode->getChild('u'), results); //Recursively continue searching with a vowel permutation
+          }
+          if(wordSize < 2)
+          {
+            return;
+          }
+          c = word[1];
+          if((c == word[0]) && (currentNode->getChild(c) != nullptr))
+          {
+            fuzzySearch(word.substr(2), currentNode->getChild(c), results); //Skip a duplicate letter
+          }
+        }
+      }
+      else
+      {
+        if(isVowel(c) == true) //Only branch for vowels
+        {
+          if(currentNode->getChild('a') != nullptr)
+          {
+            fuzzySearch(word.substr(1), currentNode->getChild('a'), results); //Recursively continue searching with a vowel permutation
+          }
+          if(currentNode->getChild('e') != nullptr)
+          {
+            fuzzySearch(word.substr(1), currentNode->getChild('e'), results); //Recursively continue searching with a vowel permutation
+          }
+          if(currentNode->getChild('i') != nullptr)
+          {
+            fuzzySearch(word.substr(1), currentNode->getChild('i'), results); //Recursively continue searching with a vowel permutation
+          }
+          if(currentNode->getChild('o') != nullptr)
+          {
+            fuzzySearch(word.substr(1), currentNode->getChild('o'), results); //Recursively continue searching with a vowel permutation
+          }
+          if(currentNode->getChild('u') != nullptr)
+          {
+            fuzzySearch(word.substr(1), currentNode->getChild('u'), results); //Recursively continue searching with a vowel permutation
+          }
+          if(wordSize < 2)
+          {
+            return;
+          }
+          c = word[1];
+          if((c == word[0]) && (currentNode->getChild(c) != nullptr))
+          {
+            fuzzySearch(word.substr(2), currentNode->getChild(c), results); //Skip a duplicate letter
           }
         }
       }
