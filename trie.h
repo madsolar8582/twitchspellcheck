@@ -9,7 +9,6 @@
  */
 #ifndef TRIE_H
 #define TRIE_H
-#include <algorithm>
 #include <iostream>
 #include <set>
 #include <string>
@@ -211,26 +210,21 @@ class Trie
           if(wordSize > 1)
           {
             unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-            std::cout << "numDup=" << numDuplicates << " for word=" << word << " at char=" << c << std::endl;
             if(numDuplicates > 0)
             {
               for(unsigned short i = 1; i <= numDuplicates; ++i)
               {
-                std::cout << "Searching with word=" << word.substr(i) << " and dup=" << i << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
               }
-              std::cout << "Skip Searching with word=" << word.substr(numDuplicates + 1) << " and char=" << c << std::endl;
               fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
             }
             else
             {
-              std::cout << "No Dup Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
               fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
             }
           }
           else
           {
-            std::cout << "Size < 2 Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
             fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
           }
         }
@@ -242,26 +236,21 @@ class Trie
             if(wordSize > 1)
             {
               unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              std::cout << "numDup=" << numDuplicates << " for word=" << word << " at char=" << c << std::endl;
               if(numDuplicates > 0)
               {
                 for(unsigned short i = 1; i <= numDuplicates; ++i)
                 {
-                  std::cout << "Searching with word=" << word.substr(i) << " and dup=" << i << " and char=" << c << std::endl;
                   fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
                 }
-                std::cout << "Skip Searching with word=" << word.substr(numDuplicates + 1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
               }
               else
               {
-                std::cout << "No Dup Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
               }
             }
             else
             {
-              std::cout << " Size < 2 Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
               fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
             }
           }
@@ -271,26 +260,21 @@ class Trie
             if(wordSize > 1)
             {
               unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              std::cout << "numDup=" << numDuplicates << " for word=" << word << " at char=" << c << std::endl;
               if(numDuplicates > 0)
               {
                 for(unsigned short i = 1; i <= numDuplicates; ++i)
                 {
-                  std::cout << "Searching with word=" << word.substr(i) << " and dup=" << i << " and char=" << c << std::endl;
                   fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
                 }
-                std::cout << "Skip Searching with word=" << word.substr(numDuplicates + 1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
               }
               else
               {
-                std::cout << "No Dup Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
               }
             }
             else
             {
-              std::cout << "Size < 2 Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
               fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
             }
           }
@@ -300,26 +284,21 @@ class Trie
             if(wordSize > 1)
             {
               unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              std::cout << "numDup=" << numDuplicates << " for word=" << word << " at char=" << c << std::endl;
               if(numDuplicates > 0)
               {
                 for(unsigned short i = 1; i <= numDuplicates; ++i)
                 {
-                  std::cout << "Searching with word=" << word.substr(i) << " and dup=" << i << " and char=" << c << std::endl;
                   fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
                 }
-                std::cout << "Skip Searching with word=" << word.substr(numDuplicates + 1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
               }
               else
               {
-                std::cout << "No Dup Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
               }
             }
             else
             {
-              std::cout << "Size < 2 Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
               fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
             }
           }
@@ -329,26 +308,21 @@ class Trie
             if(wordSize > 1)
             {
               unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              std::cout << "numDup=" << numDuplicates << " for word=" << word << " at char=" << c << std::endl;
               if(numDuplicates > 0)
               {
                 for(unsigned short i = 1; i <= numDuplicates; ++i)
                 {
-                  std::cout << "Searching with word=" << word.substr(i) << " and dup=" << i << " and char=" << c << std::endl;
                   fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
                 }
-                std::cout << "Skip Searching with word=" << word.substr(numDuplicates + 1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
               }
               else
               {
-                std::cout << "No Dup Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
               }
             }
             else
             {
-              std::cout << "Size < 2 Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
               fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
             }
           }
@@ -358,26 +332,21 @@ class Trie
             if(wordSize > 1)
             {
               unsigned short numDuplicates = getNumberOfConsecutiveDuplicates(word, wordSize, c);
-              std::cout << "numDup=" << numDuplicates << " for word=" << word << " at char=" << c << std::endl;
               if(numDuplicates > 0)
               {
                 for(unsigned short i = 1; i <= numDuplicates; ++i)
                 {
-                  std::cout << "Searching with word=" << word.substr(i) << " and dup=" << i << " and char=" << c << std::endl;
                   fuzzySearch(word.substr(i), currentNode->getChild(c), results); //Check to see if it is a valid duplicate letter
                 }
-                std::cout << "Skip Searching with word=" << word.substr(numDuplicates + 1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(numDuplicates + 1), currentNode->getChild(c), results); //Skip duplicate letters
               }
               else
               {
-                std::cout << "No Dup Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
                 fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
               }
             }
             else
             {
-              std::cout << "Size < 2 Searching with word=" << word.substr(1) << " and char=" << c << std::endl;
               fuzzySearch(word.substr(1), currentNode->getChild(c), results); //Recursively continue searching
             }
           }
